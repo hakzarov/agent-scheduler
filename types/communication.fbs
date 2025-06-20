@@ -1,0 +1,29 @@
+namespace persistent_storage;
+
+// ===== Application Identifier Types =====
+table DNSName {
+  name: string;        // e.g. "example.com"
+}
+
+table TONDNSName {
+  name: string;        // e.g. "myapp.ton"
+}
+
+// Union of all App ID variants (excluding RawAddress)
+union AppIDUnion { DNSName, TONDNSName }
+
+table ApplicationID {
+  id: AppIDUnion;      // one of the above (auto-generated id_type is present)
+}
+
+// ===== State Layer (root) =====
+table StateLayer {
+  application: ApplicationID;  // which application/state this layer belongs to
+  version: ulong;              // e.g. an increasing version number (default 0)
+  timestamp: ulong;            // e.g. UNIX epoch seconds (default 0)
+  schema: string;              // optional reference to data schema (e.g. "MyAppSchemaV1")
+  payload: [ubyte];            // opaque application-specific state (flatbuffer/JSON/etc.)
+  payload_hash: [ubyte];       // hash of payload bytes (e.g. SHA-256, 32 bytes)
+}
+
+root_type StateLayer;
